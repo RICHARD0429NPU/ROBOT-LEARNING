@@ -1,0 +1,237 @@
+#include<iostream>
+#include<string>
+#include<algorithm>
+#include<cmath>
+#include<vector> 
+using namespace std;
+void Get_sum(vector <int> a,vector <int> b, int length) {
+    vector <int> s(length);
+    int to_high = 0, l = length, i;
+    for (i = 0; i < l; i++) {
+        s[i] = (a[i]+b[i]+to_high)%10;
+        to_high = (a[i]+b[i]+to_high)/10;
+    }
+    if (to_high >0) s[l++] = 1;
+    int flag = 0;
+    for (i = l-1; i>=1; i--) {
+       if(s[i]||flag==1) {
+	   cout<<s[i];
+	   flag=1;}
+    }
+    cout<<s[0];
+}
+void Get_diff(vector <int> a,vector <int> b, int length) {
+    vector <int> s(length);
+    int need_high = 0, l = length, i;
+    for (i = 0; i < l; i++) {
+        if ((a[i]-need_high) < b[i]) {
+            s[i] = a[i]+10-b[i]-need_high;
+            need_high = 1;
+        } else {
+            s[i] = a[i]-b[i]-need_high;
+            need_high = 0;
+        }
+    }
+    int flag = 0;
+    for (i = l-1; i>=1; i--) {
+       if(s[i]||flag==1) {
+	   cout<<s[i];
+	   flag=1;}
+    }
+    cout<<s[0];
+}
+void Get_mul(vector <int> a,vector <int> b,  int a_length, int b_length) {
+    vector <int> s(a_length+b_length,0);
+    int i;
+    for (i = 0; i < a_length; i++) {
+        for (int j = 0; j < b_length; j++) {
+            s[i+j] += a[i]*b[j];
+        }
+    }
+    int to_high = 0, total = a_length+b_length;
+    for (i = 0; i < total; i++) {
+        int temp = s[i];
+        s[i] = (temp+to_high)%10;
+        to_high  = (temp+to_high)/10;
+    }
+    int flag = 0;
+    for (i = total-1; i>=1; i--) {
+       if(s[i]||flag==1) {
+	   cout<<s[i];
+	   flag=1;}
+    }
+    cout<<s[0];
+}
+bool compare_ab(vector <int> a,vector <int> b,int j,int a_length,int b_length)
+{
+	int k=0;//记住比较次数 
+	if(a[a_length-j-1]>b[b_length-1])
+	{
+		return true;
+	}
+	if(a[a_length-j-1]<b[b_length-1])
+	{
+		return  false;
+	}
+	while(k!=b_length)
+		{
+			if(a[a_length-j-k-1]>b[b_length-k-1])
+		{
+			return true;
+		}
+		    if(a[a_length-j-k-1]<b[b_length-k-1])
+		{
+			return false;
+		}
+		k++; 
+		}
+		return true;
+}
+void Get_div(vector <int> a,vector <int> b,  int a_length, int b_length,bool a_flag,bool b_flag) {
+    vector <int> s(abs(a_length-b_length)+1,0);
+    vector <int> mod(b_length);
+    if(a_length<b_length)
+    {
+    	cout <<"0"<<endl;
+    	int i=0;
+    	for(i=a_length-1;i>=0;i--)
+    	cout << a[i];
+    	return;
+	}
+    int j,k=0,need_high = 0,flag=0,i;
+    for(j=0;j<a_length-b_length;j++){
+		while(compare_ab(a,b,j,a_length,b_length))
+		{
+			for(k=b_length;k>0;k--)//k+1抵消数组没下标未减一 
+			{
+				a[a_length-k-j]-=b[b_length-k];
+				if(a[a_length-k-j]<0){
+					a[a_length-k-j]+=10;
+					a[a_length-k-j+1]-=1;
+				}
+			}
+			s[j]+=1; 
+		}
+		a[a_length-j-2]+=a[a_length-j-1]*10;
+	}
+	if(compare_ab(a,b,j,a_length,b_length)){
+	while(compare_ab(a,b,j,a_length,b_length))
+		{
+			for(k=b_length;k>0;k--)//k+1抵消数组没下标未减一 
+			{
+				a[a_length-k-j]-=b[b_length-k];
+				if(a[a_length-k-j]<0){
+					a[a_length-k-j]+=10;
+					a[a_length-k-j+1]-=1;
+				}
+			}
+			s[j]+=1;
+			if(!compare_ab(a,b,j,a_length,b_length))
+			{
+			for (i = b_length-1; i>=0; i--) {
+                mod[i]=a[i];
+            }
+			} 
+		}}else
+		{
+			for (i = b_length-1; i>=0; i--) {
+                mod[i]=a[i];
+            }
+		}
+		flag=0;
+		if((!a_flag&&b_flag)||(!a_flag&&b_flag))
+		cout << "-";
+       for (i = 0; i<a_length-b_length; i++) {
+       if(s[i]||flag==1) {
+	   cout<<s[i];
+	   flag=1;}
+    }
+	cout<<s[i];
+	flag=0;
+	cout <<endl;
+	if(!a_flag&&!b_flag)
+	{	
+		for (i = b_length-1; i>=0; i--) {
+        //if(mod[i]||flag==1) {
+	   cout<<mod[i];
+	   flag=1;//}
+    }
+    }
+	}
+int main(){
+    string a, b;
+    cin >> a >> b;
+        bool a_flag = false, b_flag = false;
+        if (a[0] == '-') {
+            a.erase(0,1);
+            a_flag = true;
+        }
+        if (b[0] == '-') {
+            b.erase(0,1);
+            b_flag = true;
+        }
+        reverse(a.begin(), a.end());
+        reverse(b.begin(), b.end());
+        int length = max(a.length(), b.length());
+        vector <int> s1(length,0), s2(length,0);
+        unsigned int k;
+        for (k = 0; k < a.length(); k++) s1[k] = a[k] - '0';//字符转数值 
+        for (k = 0; k < b.length(); k++) s2[k] = b[k] - '0';
+        if ((!a_flag) && (!b_flag)) {
+            Get_sum(s1, s2, length);
+			cout << endl;
+            if (a.length() > b.length() || (a.length() == b.length() && a >= b)) // a >= b
+                {
+				Get_diff(s1, s2, length);
+				cout << endl;
+			}
+            else {
+			cout << "-" ;
+			Get_diff(s2, s1, length);
+			cout << endl;
+		}
+            Get_mul(s1, s2, a.length(), b.length());
+            cout << endl;
+        }else if (a_flag && b_flag) {
+            cout << "-" ;
+			Get_sum(s1, s2, length);
+			cout << endl;
+            if(b.length() > a.length() || (a.length() == b.length() && b >= a))
+			{
+			Get_diff(s2, s1, length);
+			cout << endl;
+			}else {
+		    cout << "-" ;
+			Get_diff(s1, s2, length);
+			cout << endl;}
+			Get_mul(s1, s2, a.length(), b.length()) ;
+			cout << endl;
+        } else {
+            if ((!a_flag) && b_flag) {
+                if (a.length() > b.length() || (a.length() == b.length() && a >= b)) // a >= b
+                    {
+					Get_diff(s1, s2, length);
+					cout << endl;}
+                else {
+				cout << "-";
+				Get_diff(s2, s1, length);
+				cout << endl;}
+                Get_sum(s1, s2, length);
+				cout << endl;//下面只需将a，b所指的变量换个顺序即可 
+            } else {
+                if (b.length() > a.length() || (a.length() == b.length() && b >= a)) {Get_diff(s2, s1, length);cout << endl;}
+				else {
+				cout <<"-";
+				Get_diff(s1, s2, length);
+				cout << endl;}
+                cout << "-" ;
+				Get_sum(s1, s2, length);
+				cout << endl;
+            }
+            cout << "-";
+			Get_mul(s1, s2, a.length(), b.length());
+			cout << endl;
+        }
+    Get_div(s1,s2,a.length(), b.length(),a_flag,b_flag); 
+    return 0;
+}
